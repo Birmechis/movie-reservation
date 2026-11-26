@@ -1,7 +1,7 @@
 import re
 from flask import Blueprint, request, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, get_jwt_identity
 from app.models import Users
 from app.extension import db
 
@@ -160,4 +160,13 @@ def logout():
     session.clear()
     return jsonify({
         "msg": "Logged out successfully"
+    }), 200
+
+@auth_bp.route('/refresh-token', methods=['POST'])
+def refresh_token():
+    current_user = get_jwt_identity()
+    new_token = create_access_token(identity=current_user)
+
+    return jsonify({
+        "new-token": new_token
     }), 200
