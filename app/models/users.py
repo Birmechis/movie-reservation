@@ -13,6 +13,10 @@ class Users(db.Model):
     role = db.Column(db.Enum('USER', 'ADMIN', name='user_roles'), nullable=False, defualt='USER')
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    movies = db.relationship(
+        "Movies",
+        back_populates="creator"
+    )
 
 
     def __repr__(self):
