@@ -37,7 +37,7 @@ def validate_auth(data, is_signup=True):
             "error": "Please provide a non-empty value for the password."
         }), 400)
 
-    cleaned_date = {
+    cleaned_data = {
         "email": email,
         "password": password
     }
@@ -66,9 +66,9 @@ def validate_auth(data, is_signup=True):
                 "error": "Password must contain at least one letter and one number and special character."
             }), 400)
 
-        cleaned_date["username"] = username
+        cleaned_data["username"] = username
 
-    return cleaned_date, None
+    return cleaned_data, None
 
 
 @auth_bp.route('/signup', methods=['POST'])
@@ -137,3 +137,5 @@ def login():
            "msg": "Login successfully.",
            "token": token
        }), 200
+
+@auth_bp.route('/logout', methods=['POST'])
