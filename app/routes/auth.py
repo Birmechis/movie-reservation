@@ -7,6 +7,7 @@ from app.extension import db
 
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+$")
 USERNAME_REGEX = re.compile(r"^[a-zA-Z0-9_.-]{3,20}$")
+FULL_NAME_REGEX = re.compile(r"^[a-zA-Z\s'.-]{2,50}$")
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -43,6 +44,21 @@ def validate_auth(data, is_signup=True):
     }
 
     if is_signup:
+        
+        full_name = data.get('full_name')
+
+        if not isinstance(full_name, str):
+            return None, (jsonify({
+                "error": "Invalid full name. Expected a string value."
+            }), 400)
+
+        full_name = " ".join(full_name.split())
+
+        if not FULL_NAME_REGEX.match(full_name):
+            return None, (jsonify({
+                "error": "Invalid  full name. Must be 2-50 character and contain only letters, spaces, hyphens, periods, or apostrophes."
+            }), 400)
+
         username = data.get('username')
 
         if not isinstance(username, str):
@@ -66,6 +82,7 @@ def validate_auth(data, is_signup=True):
                 "error": "Password must contain at least one letter and one number and special character."
             }), 400)
 
+        cleaned_data["full_name"] = full_name
         cleaned_data["username"] = username
 
     return cleaned_data, None

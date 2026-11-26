@@ -1,1 +1,1 @@
-from app.models.user import Users
+from app.models.users import Users
