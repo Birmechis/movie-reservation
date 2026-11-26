@@ -12,7 +12,9 @@ def create_app():
     jwt.init_app(app)
 
     from app.routes.auth import auth_bp
+    from app.routes.movies import movie_bp
 
-    app.register_blueprint(auth_bp, url_prefix='/api/auth')
+    app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
+    app.register_blueprint(movie_bp, url_prefix="/api/v1/")
 
     return app
