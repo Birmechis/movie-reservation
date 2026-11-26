@@ -1,5 +1,5 @@
 import re
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 from app.models import Users
@@ -139,3 +139,8 @@ def login():
        }), 200
 
 @auth_bp.route('/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return jsonify({
+        "msg": "Logged out successfully"
+    }), 200
