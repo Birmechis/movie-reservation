@@ -29,6 +29,12 @@ class Movies(db.Model):
         back_populates="movies",
         cascade="all, delete-orphan"
     )
+
+    movie_actors = db.relationship(
+        "MovieActors",
+        back_populates = "movie", 
+        cascade="all, delete-orphan"
+    )
     
     def to_dict(self):
         return {
