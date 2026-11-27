@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from app.extension import db
-from app.models import Movies, Genres, MovieGenres
+from app.models import Movies, Genres, MovieGenres, Actors, MovieActors
 
 
 movie_bp = Blueprint('movie', __name__)
@@ -85,3 +85,37 @@ def get_movie_by_genre():
          "limit": limit,
          "total": total
     }), 200
+
+@movie_bp.route('/movies', methods=['GET'])
+@jwt_required()
+def get_movies_by_actors():
+
+     page = max(1, request.args.get('page', type=int))
+     limit = max(1, min(request.args.get('limit', 10, type=int), 50))
+
+     actor = request.args.get('actor', '').strip()
+
+     if actor:
+
+          actor = Actors.query.filter(Actors.full_name.ilike(actor)).first()
+          if not actor:
+               return jsonify({
+                    "movies": [],
+                    "page": page,
+                    "limit": limit,
+                    "total": 0
+               }), 200
+          query = Movies.query.join(MovieActors).filter(MovieActors.actor_id == actor.id)
+     else:
+          query = Movies.query
+
+     calculate_offset = (page-1)*limit
+     total = query.count()
+     records = query.offset(calculate_offset).limit(limit).all()
+
+     return jsonify({
+          "movie": [mv.to_dict() for mv in records],
+          "page": page,
+          "limit": limit,
+          "total": total
+     }), 200
